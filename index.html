@@ -1,0 +1,87 @@
+<html>
+	<head>
+		<!-- D3.js -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+		<!-- jQuery -->
+		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<!-- Plotly.js -->
+		<script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
+        <!-- Bootstrap -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+	</head>
+	<body>
+        <div class="container-fluid">
+            <div class="row" >
+                <div class="col-md-1 col-lg-1"></div>
+                <div class="col-md-10 col-lg-10 text-center">
+                    <div id="modelShow"></div>
+                </div>    
+                <div class="col-md-1 col-lg-1 text-center"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-1  col-lg-2"></div>
+                <div class="col-md-10 col-lg-8">
+               
+                </div>
+                <div class="col-md-1  col-lg-2"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-lg-12 text-center">
+                    <div id="controlPanel">
+                        <button type="button" class="btn btn-default" onclick="grid.compute_all(true)">Next and Plot</button>
+                        <button type="button" class="btn btn-default" onclick="grid.autoRun()">Run 100</button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setParameter">設定參數</button>
+                    </div>
+                </div>    
+            </div>
+        </div>
+        
+        <!-- Parameter Window -->
+        <div class="modal fade" id="setParameter">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">設定模式參數</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="paraForm">
+                            <div class="form-group">
+                                <label for="init_delta">位溫擾動[K]</label>
+                                <input type="number" class="form-control" id="init_delta" placeholder="EX : +10.0 or -3.3">
+                            </div>
+                            <div class="form-group">
+                                <label for="init_radx">Thremal寬度[m]</label>
+                                <input type="number" class="form-control" id="init_radx" placeholder="EX : 1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="init_radz">Thremal高度[m]</label>
+                                <input type="number" class="form-control" id="init_radz" placeholder="EX : 1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="init_zcnt">Thremal中心高度[m]</label>
+                                <input type="number" class="form-control" id="init_zcnt" placeholder="EX : 1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="init_imid">Thermal中心位移格數[網格]</label>
+                                <input type="number" class="form-control" id="init_imid" placeholder="EX : 30">
+                            </div>                        
+                        </form>                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary" onclick="updateParameter(event)" data-dismiss="modal">更新參數</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <!-- Model JS -->
+        <script src="scripts/model.js"></script>
+	</body>
+
+
+</html>
