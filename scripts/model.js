@@ -1,8 +1,8 @@
 "use strict" ;
 function Constant(){
     // Grid Setting
-    this.NX  = 380 ;
-    this.NZ  = 64  ;
+    this.NX  = 1520 ;
+    this.NZ  = 256  ;
     this.DX  = 100 ;
     this.DZ  = 100 ; 
     this.DT  = 0.5   ;
@@ -499,12 +499,24 @@ WholeGrid.prototype.updatePlot = function(){
 };
 
 WholeGrid.prototype.autoRun = function(){
-    for ( var i=0 ; i < 99 ; i++){
+    var deferred = $.Deferred();
+    
+    var iter_max = 99 ;
+    for ( var i=0 ; i < iter_max ; i++){
         this.compute_all(false) ;
     }
-    this.compute_all(true) ;
-   
-}
+    this.compute_all(true);
+    return deferred.promise();
+};
+
+WholeGrid.prototype.updateBar = function(now,total){
+    var percent = Math.round( now / total * 100 ) ;
+    if ( percent % 5 == 0 ){
+        $('#runProgress').data('progress',percent);
+        $('#runProgress').css({ 'width' : percent + '%' }) ;
+        $('#runProgress').html(percent + '%' );   
+    }
+};
 
 function updateParameter(event){
     event.preventDefault() ;
