@@ -1,8 +1,8 @@
 "use strict" ;
 function Constant(){
     // Grid Setting
-    this.NX  = 1520 ;
-    this.NZ  = 256  ;
+    this.NX  = 380 ;
+    this.NZ  = 128 ;
     this.DX  = 100 ;
     this.DZ  = 100 ; 
     this.DT  = 0.5   ;
@@ -498,25 +498,42 @@ WholeGrid.prototype.updatePlot = function(){
     Plotly.redraw(modelShow) ;
 };
 
-WholeGrid.prototype.autoRun = function(){
+function autoRun(){
     var deferred = $.Deferred();
-    
+    var promise = deferred.promise();
     var iter_max = 99 ;
-    for ( var i=0 ; i < iter_max ; i++){
-        this.compute_all(false) ;
-    }
-    this.compute_all(true);
-    return deferred.promise();
-};
-
-WholeGrid.prototype.updateBar = function(now,total){
-    var percent = Math.round( now / total * 100 ) ;
-    if ( percent % 5 == 0 ){
+    var iter_now = 0  ;
+    
+    var updateBar = function(){
+        var percent = Math.round( iter_now/ iter_max * 100 ) ;
         $('#runProgress').data('progress',percent);
         $('#runProgress').css({ 'width' : percent + '%' }) ;
         $('#runProgress').html(percent + '%' );   
-    }
-};
+    };
+    
+    var calculate = function(){
+        console.log(iter_now +'--'+ iter_max);
+        var index = 0 ; 
+        while ( index < 10 && iter_now < iter_max ){
+            grid.compute_all(false) ;
+            iter_now++ ;
+            index++ ;
+        }
+        updateBar();
+        
+        if( iter_now == iter_max ){
+            grid.compute_all(true);
+            updateBar();
+        }else{
+            setTimeout( calculate , 10 ) ;
+        }
+    };
+    
+    
+    //setInterval( calculate , 200 )  ;
+    setTimeout( calculate , 0 ) ;
+}
+
 
 function updateParameter(event){
     event.preventDefault() ;
