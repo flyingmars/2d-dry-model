@@ -498,15 +498,20 @@ WholeGrid.prototype.updatePlot = function(){
     Plotly.redraw(modelShow) ;
 };
 
-function pressRun(){
-    var deferred = $.Deferred();
-    var promise = deferred.promise();
-    var iter_max = 99 ;
+function pressRun(iter_final){
+    console.log(iter_final);
+    var iter_max = iter_final || 99 ;
     var iter_now = 0  ;
     
-    var showBar = function(){};
-    var fadeBar = function(){};
-    
+    var showBar = function(){
+        $('#progressBarDiv').show() ;
+    };
+    var fadeBar = function(){
+        $('#progressBarDiv').hide() ;
+        $('#runProgress').data('progress' , 0 );
+        $('#runProgress').css({ 'width' : '0%' }) ;
+        $('#runProgress').html( '0%' );           
+    };  
     var updateBar = function(){
         var percent = Math.round( iter_now/ iter_max * 100 ) ;
         $('#runProgress').data('progress',percent);
@@ -515,9 +520,8 @@ function pressRun(){
     };
     
     var calculate = function(){
-
         var index = 0 ; 
-        while ( index < 10 && iter_now < iter_max ){
+        while ( index < 11 && iter_now < iter_max ){
             grid.compute_all(false) ;
             iter_now++ ;
             index++ ;
@@ -527,16 +531,17 @@ function pressRun(){
         if( iter_now == iter_max ){
             grid.compute_all(true);
             updateBar();
+            fadeBar();
         }else{
-            setTimeout( calculate , 10 ) ;
+            setTimeout( calculate , 30 ) ;
         }
     };
     
     
     //setInterval( calculate , 200 )  ;
+    showBar() ;
     setTimeout( calculate , 0 ) ;
 }
-
 
 function updateParameter(event){
     event.preventDefault() ;
@@ -555,11 +560,31 @@ function updateControlValue(){
     $('#init_imid').val(grid.imid);
 }
 
+
 var grid = new WholeGrid() ;
+var intevalFunction = null ;
+
 grid.baseState_OneDimension_Initialization();
 grid.perturbation_Initialization_Cold();
 grid.newPlot() ;
 updateControlValue() ;
+
+function autoRun(){
+    
+    var flag = $('#autoRunBtn').data('myflag');
+    
+    if ( flag == 1 ){
+        $('#autoRunBtn').html('停止積分');
+        intevalFunction = setInterval( "pressRun(20)" , 500 );
+        console.log('startInt');
+    }else{
+        $('#autoRunBtn').html('自動積分');        
+        clearInterval( intevalFunction ) ;
+        console.log('clearInt');
+    }
+    $('#autoRunBtn').data('myflag',(flag+1)%2);
+}
+
 
 
 
