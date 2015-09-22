@@ -498,11 +498,14 @@ WholeGrid.prototype.updatePlot = function(){
     Plotly.redraw(modelShow) ;
 };
 
-function autoRun(){
+function pressRun(){
     var deferred = $.Deferred();
     var promise = deferred.promise();
     var iter_max = 99 ;
     var iter_now = 0  ;
+    
+    var showBar = function(){};
+    var fadeBar = function(){};
     
     var updateBar = function(){
         var percent = Math.round( iter_now/ iter_max * 100 ) ;
@@ -512,7 +515,7 @@ function autoRun(){
     };
     
     var calculate = function(){
-        console.log(iter_now +'--'+ iter_max);
+
         var index = 0 ; 
         while ( index < 10 && iter_now < iter_max ){
             grid.compute_all(false) ;
