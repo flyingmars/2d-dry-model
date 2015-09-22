@@ -2,7 +2,7 @@
 function Constant(){
     // Grid Setting
     this.NX  = 380 ;
-    this.NZ  = 128 ;
+    this.NZ  = 64 ;
     this.DX  = 100 ;
     this.DZ  = 100 ; 
     this.DT  = 0.5   ;
@@ -23,12 +23,6 @@ function Constant(){
     // Manage Time
     this.PERGRAPH = 40 ;
     this.EINISHTIME = 900.0 ;
-    // Perturbation Parameter
-    this.zcnt  = null ;
-    this.delta = null ;
-    this.radx  = null ;
-    this.radz  = null ;
-    this.imid  = null ;
     // Flag
     this.DIFFUSION = true ;
     this.NEUTRAL = true ;
@@ -63,14 +57,18 @@ function WholeGrid(){
     this.pi    = new Array(con.NZ);
     this.pim   = new Array(con.NZ);
     // User Change Parameter
-    this.zcnt  = $('#init_zcnt').val() ;
-    this.delta = $('#init_delta').val() ;
-    this.radx  = $('#init_radx').val() ;
-    this.radz  = $('#init_radz').val() ;
-    this.imid  = $('#init_imid').val() ;
+    this.zcnt  = $('#init_zcnt').val()  || 3000 ;
+    this.delta = $('#init_delta').val() || -15 ;
+    this.radx  = $('#init_radx').val() || 4000 ;
+    this.radz  = $('#init_radz').val() || 2000 ;
+    this.imid  = $('#init_imid').val() || (( con.NX % 2 == 0 ) ? con.NX/2 : (con.NX-1.0)/2) ;
+    // Diffusion Term
+    this.KX    = $('#init_KX').val() || 75 ;
+    this.KZ    = $('#init_KZ').val() || 75 ;        
     // For Plot
     this.xgrid = new Array(con.NX);
     this.zgrid = new Array(con.NZ);
+
     // Initailize
     for ( var k=0 ; k < con.NZ ; k++){
         this.tb[k]    = 0 ;
@@ -164,11 +162,7 @@ WholeGrid.prototype.baseState_OneDimension_Initialization = function(){
 WholeGrid.prototype.perturbation_Initialization_Cold = function(){
     var con    =  new Constant() ;
     var TRIGPI =  4. * Math.atan( 1.0 );
-    this.imid   =  this.imid  || (( con.NX % 2 == 0 ) ? con.NX/2 : (con.NX-1.0)/2) ;
-    this.zcnt   =  this.zcnt  || 3000   ;
-    this.delta  =  this.delta || -15.0  ;
-    this.radx   =  this.radx  || 4000.0 ;
-    this.radz   =  this.radz  || 2000.0 ;
+
 
     var currentRad = 0 ;
     var tup = 0 ; 
@@ -301,8 +295,8 @@ WholeGrid.prototype.compute_du_dt = function(){
                        *this.tb[k] * ( this.pi[k][i] - this.pi[k][i-1] ) ;
             if ( con.DIFFUSION ){
                 this.up[k][i] +=
-                    +con.DTX * con.KX/con.DX * (  this.um[k][i+1] - 2. * this.um[k][i] + this.um[k][i-1] )             
-                    +con.DTZ * con.KZ/con.DZ * (  this.um[k+1][i] - 2. * this.um[k][i] + this.um[k-1][i] ) ;    /* Diffusion Term */                        ;                    
+                    +con.DTX * this.KX/con.DX * (  this.um[k][i+1] - 2. * this.um[k][i] + this.um[k][i-1] )             
+                    +con.DTZ * this.KZ/con.DZ * (  this.um[k+1][i] - 2. * this.um[k][i] + this.um[k-1][i] ) ;    /* Diffusion Term */                        ;                    
             }    
         }
     }
@@ -339,8 +333,8 @@ WholeGrid.prototype.compute_dw_dt =function(){
                
             if ( con.DIFFUSION ){
                 this.wp[k][i] +=
-                        con.DTX * con.KX / con.DX * (  this.wm[k][i+1]- 2. * this.wm[k][i] + this.wm[k][i-1] )             
-                       +con.DTZ * con.KZ / con.DZ * (  this.wm[k+1][i]- 2. * this.wm[k][i] + this.wm[k-1][i] ) ;    /* Diffusion Term */
+                        con.DTX * this.KX / con.DX * (  this.wm[k][i+1]- 2. * this.wm[k][i] + this.wm[k][i-1] )             
+                       +con.DTZ * this.KZ / con.DZ * (  this.wm[k+1][i]- 2. * this.wm[k][i] + this.wm[k-1][i] ) ;    /* Diffusion Term */
             }
         }
     }
@@ -380,8 +374,8 @@ WholeGrid.prototype.compute_dtheta_dt = function(){
                +this.thm[k][i] ;
             if ( con.DIFFUSION ){
                 this.thp[k][i]  +=
-                      con.DTX * con.KX/con.DX * (  this.thm[k][i+1] - 2. * this.thm[k][i]  + this.thm[k][i-1] )             
-                    + con.DTZ * con.KZ/con.DZ * (  this.thm[k+1][i] - 2. * this.thm[k][i]  + this.thm[k-1][i] ) ;   /* Diffusion Term */                                                            
+                      con.DTX * this.KX/con.DX * (  this.thm[k][i+1] - 2. * this.thm[k][i]  + this.thm[k][i-1] )             
+                    + con.DTZ * this.KZ/con.DZ * (  this.thm[k+1][i] - 2. * this.thm[k][i]  + this.thm[k-1][i] ) ;   /* Diffusion Term */                                                            
             }                         
         }
     }  
@@ -416,8 +410,8 @@ WholeGrid.prototype.compute_dpi_dt = function(){
                +this.pim[k][i] ;
             if ( con.DIFFUSION ){
                 this.pip[k][i] +=
-                    con.DTX * con.KX/con.DX * (  this.pim[k][i+1]- 2.*this.pim[k][i] + this.pim[k][i-1] )             
-                   +con.DTZ * con.KZ/con.DZ * (  this.pim[k+1][i]- 2.*this.pim[k][i] + this.pim[k-1][i] ) ;   /* Diffusion Term */                  
+                    con.DTX * this.KX/con.DX * (  this.pim[k][i+1]- 2.*this.pim[k][i] + this.pim[k][i-1] )             
+                   +con.DTZ * this.KZ/con.DZ * (  this.pim[k+1][i]- 2.*this.pim[k][i] + this.pim[k-1][i] ) ;   /* Diffusion Term */                  
             }    
         }
     }
@@ -558,6 +552,8 @@ function updateControlValue(){
     $('#init_radz').val(grid.radz);
     $('#init_zcnt').val(grid.zcnt);
     $('#init_imid').val(grid.imid);
+    $('#init_KX').val(grid.KX);
+    $('#init_KZ').val(grid.KZ);
 }
 
 
