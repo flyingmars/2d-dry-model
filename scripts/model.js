@@ -1,22 +1,11 @@
 "use strict" ;
 function Constant(){
-    // Grid Setting
-    this.NX  = 380 ;
-    this.NZ  = 64 ;
-    this.DX  = 100 ;
-    this.DZ  = 100 ; 
-    this.DT  = 0.5   ;
-    this.DTX = 2.0 * this.DT / this.DX ;
-    this.DTZ = 2.0 * this.DT / this.DX ;
     // Thermal parameter 
     this.GRAVITY = 9.81 ;
     this.R_D = 287.0  ;
     this.C_P = 1003.5 ; 
     this.C_S = 50.0   ;
     this.C_V = this.C_P - this.R_D ;
-    // Diffusion Term
-    this.KX = 75 ;
-    this.KZ = 75 ;
     // Pressure Init
     this.PZERO = 100000.0 ;
     this.PSURF = 96500.0  ;
@@ -30,66 +19,73 @@ function Constant(){
 }
 
 function WholeGrid(){
-    var con   = new Constant() ;
-    
+    var con   = new Constant() ;    
     // Time Maintain variable
     this.timePerGraph = 1  ;
     this.currentTime  = 0  ;
     this.timeEnd      = 50 ;
+    // Grid Setting
+    this.NX  = parseInt( $('#init_NX').val() ) || 380 ;
+    this.NZ  = parseInt( $('#init_NZ').val() ) || 64  ;
+    this.DX  = parseInt( $('#init_DX').val() ) || 100 ;
+    this.DZ  = parseInt( $('#init_DZ').val() ) || 100 ; 
+    this.DT  = parseFloat( $('#init_DT').val() ) || 0.5 ;
+    this.DTX = 2.0 * this.DT / this.DX ;
+    this.DTZ = 2.0 * this.DT / this.DX ;    
     // Base state arrays
-    this.tb    = new Array(con.NZ) ;
-    this.qb    = new Array(con.NZ) ;
-    this.pb    = new Array(con.NZ) ;
-    this.pib   = new Array(con.NZ) ;
-    this.rhou  = new Array(con.NZ) ;
-    this.rhow  = new Array(con.NZ) ;
+    this.tb    = new Array(this.NZ) ;
+    this.qb    = new Array(this.NZ) ;
+    this.pb    = new Array(this.NZ) ;
+    this.pib   = new Array(this.NZ) ;
+    this.rhou  = new Array(this.NZ) ;
+    this.rhow  = new Array(this.NZ) ;
     // progonstic arrays 
-    this.thp   = new Array(con.NZ);
-    this.th    = new Array(con.NZ);
-    this.thm   = new Array(con.NZ);
-    this.up    = new Array(con.NZ);
-    this.u     = new Array(con.NZ);
-    this.um    = new Array(con.NZ);
-    this.wp    = new Array(con.NZ);
-    this.w     = new Array(con.NZ);
-    this.wm    = new Array(con.NZ);
-    this.pip   = new Array(con.NZ);
-    this.pi    = new Array(con.NZ);
-    this.pim   = new Array(con.NZ);
+    this.thp   = new Array(this.NZ);
+    this.th    = new Array(this.NZ);
+    this.thm   = new Array(this.NZ);
+    this.up    = new Array(this.NZ);
+    this.u     = new Array(this.NZ);
+    this.um    = new Array(this.NZ);
+    this.wp    = new Array(this.NZ);
+    this.w     = new Array(this.NZ);
+    this.wm    = new Array(this.NZ);
+    this.pip   = new Array(this.NZ);
+    this.pi    = new Array(this.NZ);
+    this.pim   = new Array(this.NZ);
     // User Change Parameter
-    this.zcnt  = $('#init_zcnt').val()  || 3000 ;
-    this.delta = $('#init_delta').val() || -15 ;
-    this.radx  = $('#init_radx').val() || 4000 ;
-    this.radz  = $('#init_radz').val() || 2000 ;
-    this.imid  = $('#init_imid').val() || (( con.NX % 2 == 0 ) ? con.NX/2 : (con.NX-1.0)/2) ;
+    this.zcnt  = parseFloat( $('#init_zcnt').val()  ) || 3000 ;
+    this.delta = parseFloat( $('#init_delta').val() ) || -15 ;
+    this.radx  = parseFloat( $('#init_radx').val()  ) || 4000 ;
+    this.radz  = parseFloat( $('#init_radz').val()  ) || 2000 ;
+    this.imid  = parseInt  ( $('#init_imid').val()  ) || (( this.NX % 2 == 0 ) ? this.NX/2 : (this.NX-1.0)/2) ;
     // Diffusion Term
-    this.KX    = $('#init_KX').val() || 75 ;
-    this.KZ    = $('#init_KZ').val() || 75 ;        
+    this.KX    = parseFloat( $('#init_KX').val() ) || 75 ;
+    this.KZ    = parseFloat( $('#init_KZ').val() ) || 75 ;        
     // For Plot
-    this.xgrid = new Array(con.NX);
-    this.zgrid = new Array(con.NZ);
+    this.xgrid = new Array(this.NX);
+    this.zgrid = new Array(this.NZ);
 
     // Initailize
-    for ( var k=0 ; k < con.NZ ; k++){
+    for ( var k=0 ; k < this.NZ ; k++){
         this.tb[k]    = 0 ;
         this.qb[k]    = 0 ;
         this.pb[k]    = 0 ;
         this.pib[k]   = 0 ;
         this.rhou[k]  = 0 ;
         this.rhow[k]  = 0 ;
-        this.thp[k]   = new Array(con.NX);
-        this.th[k]    = new Array(con.NX);
-        this.thm[k]   = new Array(con.NX);
-        this.up[k]    = new Array(con.NX);
-        this.u[k]     = new Array(con.NX);
-        this.um[k]    = new Array(con.NX);
-        this.wp[k]    = new Array(con.NX);
-        this.w[k]     = new Array(con.NX);
-        this.wm[k]    = new Array(con.NX);
-        this.pip[k]   = new Array(con.NX);
-        this.pi[k]    = new Array(con.NX);
-        this.pim[k]   = new Array(con.NX);
-        for ( var i=0 ; i < con.NX ; i++){
+        this.thp[k]   = new Array(this.NX);
+        this.th[k]    = new Array(this.NX);
+        this.thm[k]   = new Array(this.NX);
+        this.up[k]    = new Array(this.NX);
+        this.u[k]     = new Array(this.NX);
+        this.um[k]    = new Array(this.NX);
+        this.wp[k]    = new Array(this.NX);
+        this.w[k]     = new Array(this.NX);
+        this.wm[k]    = new Array(this.NX);
+        this.pip[k]   = new Array(this.NX);
+        this.pi[k]    = new Array(this.NX);
+        this.pim[k]   = new Array(this.NX);
+        for ( var i=0 ; i < this.NX ; i++){
             this.thp[k][i]    = 0;
             this.th[k][i]     = 0;
             this.thm[k][i]    = 0;
@@ -106,13 +102,13 @@ function WholeGrid(){
     }
     
     this.zgrid[0] = 0 ;
-    for ( var k=1 ; k < con.NZ ; k++){    
-        this.zgrid[k] = this.zgrid[k-1] + con.DZ ;
+    for ( var k=1 ; k < this.NZ ; k++){    
+        this.zgrid[k] = this.zgrid[k-1] + this.DZ ;
     }
     
-    this.xgrid[0] = - (con.DX * con.NX / 2);
-    for ( var i=1 ; i < con.NX ; i++){
-        this.xgrid[i] =  this.xgrid[i-1] + con.DX ;
+    this.xgrid[0] = - (this.DX * this.NX / 2);
+    for ( var i=1 ; i < this.NX ; i++){
+        this.xgrid[i] =  this.xgrid[i-1] + this.DX ;
     }
 }
 
@@ -130,33 +126,33 @@ WholeGrid.prototype.baseState_OneDimension_Initialization = function(){
     tbv_previous  = this.tb[1] * (1 + 0.61 * this.qb[1] );
     
     this.pib[1]  = Math.pow( this.pb[1] / con.PZERO , x_k ) 
-                   - con.GRAVITY * 0.5 * con.DZ / ( con.C_P * tbv_previous );    
+                   - con.GRAVITY * 0.5 * this.DZ / ( con.C_P * tbv_previous );    
     this.rhou[1] = con.PZERO * Math.pow( this.pib[1] , con.C_V / con.R_D ) / ( con.R_D * tbv_previous );
     this.rhow[1] = this.rhou[1];
 
-    for ( var k=2 ; k <= con.NZ - 2 ; k++ ){
+    for ( var k=2 ; k <= this.NZ - 2 ; k++ ){
         this.tb[k]  = con.NEUTRAL ? 300.0 : this.base_ThetaBar_Distribution(k) ;
         this.qb[k]  = con.NEUTRAL ? 0.0   : this.base_QvBar_Distribution(k)  ;        
         tbv_current = this.tb[k] * ( 1 + 0.61 * this.qb[k] );
         tbvavg = 0.5 * ( tbv_current + tbv_previous ) ;
         
-        this.pib[k]  = this.pib[k-1] - con.GRAVITY * con.DZ / ( con.C_P * tbvavg ) ;
+        this.pib[k]  = this.pib[k-1] - con.GRAVITY * this.DZ / ( con.C_P * tbvavg ) ;
         this.pb[k]   = con.PZERO * Math.pow( this.pib[k], con.C_P / con.R_D );
         this.rhou[k] = con.PZERO * Math.pow( this.pib[k], con.C_V / con.R_D ) / ( con.R_D * tbvavg );
         this.rhow[k] = 0.5 * ( this.rhou[k] + this.rhou[k-1] );
         
         tbv_previous = tbv_current;        
     }
-    this.tb[0]          = this.tb[1];
-    this.tb[con.NZ-1]   = this.tb[con.NZ-2];
-    this.pib[0]         = this.pib[1];
-    this.pib[con.NZ-1]  = this.pib[con.NZ-2];
-    this.rhou[0]        = this.rhou[1];
-    this.rhou[con.NZ-1] = this.rhou[con.NZ-2];
-    this.rhow[0]        = this.rhow[1];
-    this.rhow[con.NZ-1] = this.rhow[con.NZ-2];
-    this.qb[0]          = this.qb[1];
-    this.qb[con.NZ-1]   = this.qb[con.NZ-2];        
+    this.tb[0]           = this.tb[1];
+    this.tb[this.NZ-1]   = this.tb[this.NZ-2];
+    this.pib[0]          = this.pib[1];
+    this.pib[this.NZ-1]  = this.pib[this.NZ-2];
+    this.rhou[0]         = this.rhou[1];
+    this.rhou[this.NZ-1] = this.rhou[this.NZ-2];
+    this.rhow[0]         = this.rhow[1];
+    this.rhow[this.NZ-1] = this.rhow[this.NZ-2];
+    this.qb[0]           = this.qb[1];
+    this.qb[this.NZ-1]   = this.qb[this.NZ-2];        
 };
 
 WholeGrid.prototype.perturbation_Initialization_Cold = function(){
@@ -170,22 +166,22 @@ WholeGrid.prototype.perturbation_Initialization_Cold = function(){
     var z_scalar = 0 ;
     
     /* Create Theta perturbation */
-    for (var k=1;k<=con.NZ-2;k++){
-        for (var i=1;i<=con.NX-2;i++){    
-            z_scalar = con.DZ * (k - 0.5);
-            currentRad = Math.sqrt( Math.pow( ( z_scalar - this.zcnt ) / this.radz , 2 ) + Math.pow( con.DX *( i - this.imid )/this.radx , 2 ) ) ;
+    for (var k=1;k<=this.NZ-2;k++){
+        for (var i=1;i<=this.NX-2;i++){    
+            z_scalar = this.DZ * (k - 0.5);
+            currentRad = Math.sqrt( Math.pow( ( z_scalar - this.zcnt ) / this.radz , 2 ) + Math.pow( this.DX *( i - this.imid )/this.radx , 2 ) ) ;
             this.th[k][i] = ( currentRad >= 1 ) ? 0.0 : 0.5 * this.delta * ( Math.cos( TRIGPI * currentRad ) + 1 );
             /* make sure the first step run correctly */
             this.thm[k][i] = this.th[k][i];
         }
     }
     /* Modify Pressure Adjustment to Initial Temperature Perturbation  */
-    for (var i=1; i<=con.NX-2 ; i++){
-        this.pi[con.NZ-1][i] = 0;
-        for (var k=con.NZ-2 ; k>=1 ; k--) {    
+    for (var i=1; i<=this.NX-2 ; i++){
+        this.pi[this.NZ-1][i] = 0;
+        for (var k=this.NZ-2 ; k>=1 ; k--) {    
             tup = this.th[k+1][i] / ( this.tb[k+1] * this.tb[k+1] );
             tdn = this.th[k][i]   / ( this.tb[k]   * this.tb[k]   );
-            this.pi[k][i] = this.pi[k+1][i] - 0.5 * ( con.GRAVITY / con.C_P ) * ( tup + tdn ) * con.DZ;
+            this.pi[k][i] = this.pi[k+1][i] - 0.5 * ( con.GRAVITY / con.C_P ) * ( tup + tdn ) * this.DZ;
             /* make sure the first step run correctly */
             this.pim[k][i] = this.pi[k][i];
         }
@@ -198,7 +194,7 @@ WholeGrid.prototype.perturbation_Initialization_Cold = function(){
 WholeGrid.prototype.perturbation_Initialization = function(){
     var con    = new Constant() ;
     var TRIGPI = 4. * Math.atan(1.0);
-    var imid   =  ( con.NX % 2 == 0) ? con.NX / 2 : ( con.NX - 1.0 ) / 2 ;
+    var imid   =  ( this.NX % 2 == 0) ? this.NX / 2 : ( this.NX - 1.0 ) / 2 ;
     var zcnt   =  3000 ;
     var delta  =  5.0;
     var radx   =  4000.0 , radz = 4000.0;
@@ -209,10 +205,10 @@ WholeGrid.prototype.perturbation_Initialization = function(){
     var z_scalar;
 
     /* Create Theta perturbation */
-    for (var i=1;i<=con.NX-2;i++){
-        for (var k=1;k<=con.NZ-2;k++){
-            z_scalar = con.DZ * (k - 0.5);
-            currentRad = Math.sqrt( Math.pow( ( z_scalar - zcnt)/radz , 2 ) + Math.pow( con.DX * ( i - imid )/radx , 2 ) ) ;
+    for (var i=1;i<=this.NX-2;i++){
+        for (var k=1;k<=this.NZ-2;k++){
+            z_scalar = this.DZ * (k - 0.5);
+            currentRad = Math.sqrt( Math.pow( ( z_scalar - zcnt)/radz , 2 ) + Math.pow( this.DX * ( i - imid )/radx , 2 ) ) ;
 
             if ( currentRad >= 1 ){
                 this.th[k][i] = 0;
@@ -226,12 +222,12 @@ WholeGrid.prototype.perturbation_Initialization = function(){
     
     /* Modify Pressure Adjustment to Initial Temperature Perturbation  */
 
-    for (var i=1; i<=con.NX-2;i++){
+    for (var i=1; i<=this.NX-2;i++){
         this.pi[NZ-1][i] = 0;    
-        for (var k=con.NZ-2;k>=1;k--) {
+        for (var k=this.NZ-2;k>=1;k--) {
             tup = this.th[i][k+1]/( this.tb[k+1] * this.tb[k+1] );
             tdn = this.th[i][k] / ( this.tb[k]   * this.tb[k]) ;
-            this.pi[k][i] = this.pi[k+1][i] - 0.5 * ( con.GRAVITY / con.C_P ) * ( tup + tdn ) * con.DZ;
+            this.pi[k][i] = this.pi[k+1][i] - 0.5 * ( con.GRAVITY / con.C_P ) * ( tup + tdn ) * this.DZ;
             /* make sure the first step run correctly */
             this.pim[k][i] = this.pi[k][i] ;
         }
@@ -261,7 +257,7 @@ WholeGrid.prototype.base_ThetaBar_Distribution = function(z_grid_index){
 
 WholeGrid.prototype.base_QvBar_Distribution = function(z_grid_index){
     var con = new Constant();
-    var z_T = ( (z_grid_index - 0.5) )* con.DZ ;
+    var z_T = ( (z_grid_index - 0.5) )* this.DZ ;
     
     
     if( z_T <= 4000 ){
@@ -278,37 +274,37 @@ WholeGrid.prototype.compute_du_dt = function(){
     var con = new Constant() ;
     
     /* Main function calculate du_dt */
-    for (var k=1;k<con.NZ-1;k++){
-        for (var i=1;i<con.NX-1;i++){
+    for (var k=1;k<this.NZ-1;k++){
+        for (var i=1;i<this.NX-1;i++){
             this.up[k][i] = this.um[k][i]
-                - 0.25 * con.DTX *( 
+                - 0.25 * this.DTX *( 
                        ( this.u[k][i+1] + this.u[k][i])*( this.u[k][i+1] + this.u[k][i]) 
                       -( this.u[k][i-1] + this.u[k][i])*( this.u[k][i-1] + this.u[k][i]) 
                 )
-                - 0.25 * con.DTZ *( 
+                - 0.25 * this.DTZ *( 
                         this.rhow[k+1] *( this.w[k+1][i] + this.w[k+1][i-1] )
                                        *( this.u[k+1][i] + this.u[k  ][i  ] )
                        -this.rhow[k  ] *( this.w[k  ][i] + this.w[k  ][i-1] )
                                        *( this.u[k-1][i] + this.u[k  ][i  ] )
                 ) / this.rhou[k] 
-                - con.DTX * con.C_P  
+                - this.DTX * con.C_P  
                        *this.tb[k] * ( this.pi[k][i] - this.pi[k][i-1] ) ;
             if ( con.DIFFUSION ){
                 this.up[k][i] +=
-                    +con.DTX * this.KX/con.DX * (  this.um[k][i+1] - 2. * this.um[k][i] + this.um[k][i-1] )             
-                    +con.DTZ * this.KZ/con.DZ * (  this.um[k+1][i] - 2. * this.um[k][i] + this.um[k-1][i] ) ;    /* Diffusion Term */                        ;                    
+                    +this.DTX * this.KX/this.DX * (  this.um[k][i+1] - 2. * this.um[k][i] + this.um[k][i-1] )             
+                    +this.DTZ * this.KZ/this.DZ * (  this.um[k+1][i] - 2. * this.um[k][i] + this.um[k-1][i] ) ;    /* Diffusion Term */                        ;                    
             }    
         }
     }
     /* zero gradient for top and bottom */
-    for (var i=1;i<con.NX-1;i++){
+    for (var i=1;i<this.NX-1;i++){
         this.up[0][i]       = this.up[1][i] ;
-        this.up[con.NZ-1][i]= this.up[con.NZ-2][i] ;
+        this.up[this.NZ-1][i]= this.up[this.NZ-2][i] ;
     }
     /* Periodic for left and right */
-    for (var k=1;k<con.NZ-1;k++){
-        this.up[k][0]        = grid.up[k][con.NX-2];
-        this.up[k][con.NX-1] = grid.up[k][1];
+    for (var k=1;k<this.NZ-1;k++){
+        this.up[k][0]        = grid.up[k][this.NX-2];
+        this.up[k][this.NX-1] = grid.up[k][1];
     }
     
 };
@@ -316,39 +312,39 @@ WholeGrid.prototype.compute_du_dt = function(){
 WholeGrid.prototype.compute_dw_dt =function(){
     var con = new Constant() ;
     
-    for (var k=2;k<con.NZ-1;k++ ){
-        for (var i=1;i<con.NX-1;i++ ){
+    for (var k=2;k<this.NZ-1;k++ ){
+        for (var i=1;i<this.NX-1;i++ ){
             this.wp[k][i] =
-               -con.DTX * (
+               -this.DTX * (
                     0.25 * ( this.u[k][i+1] + this.u[k-1][i+1]) * ( this.w[k][i+1] + this.w[k][i  ] ) 
                    -0.25 * ( this.u[k][i  ] + this.u[k-1][i  ]) * ( this.w[k][i  ] + this.w[k][i-1] )
                 )
-               -con.DTZ * (
+               -this.DTZ * (
                     0.25 * this.rhou[k  ]* ( this.w[k+1][i] + this.w[k  ][i] ) * ( this.w[k+1][i] + this.w[k  ][i] )
                    -0.25 * this.rhou[k-1]* ( this.w[k  ][i] + this.w[k-1][i] ) * ( this.w[k  ][i] + this.w[k-1][i] )
                 ) / this.rhow[k]
-               -con.C_P * con.DT * ( this.tb[k] + this.tb[k-1] ) * ( this.pi[k][i] - this.pi[k-1][i] ) / con.DZ 
-               +con.GRAVITY * con.DT * ( ( this.th[k][i] / this.tb[k] ) + ( this.th[k-1][i] / this.tb[k-1] ) ) 
+               -con.C_P * this.DT * ( this.tb[k] + this.tb[k-1] ) * ( this.pi[k][i] - this.pi[k-1][i] ) / this.DZ 
+               +con.GRAVITY * this.DT * ( ( this.th[k][i] / this.tb[k] ) + ( this.th[k-1][i] / this.tb[k-1] ) ) 
                +this.wm[k][i] ;
                
             if ( con.DIFFUSION ){
                 this.wp[k][i] +=
-                        con.DTX * this.KX / con.DX * (  this.wm[k][i+1]- 2. * this.wm[k][i] + this.wm[k][i-1] )             
-                       +con.DTZ * this.KZ / con.DZ * (  this.wm[k+1][i]- 2. * this.wm[k][i] + this.wm[k-1][i] ) ;    /* Diffusion Term */
+                        this.DTX * this.KX / this.DX * (  this.wm[k][i+1]- 2. * this.wm[k][i] + this.wm[k][i-1] )             
+                       +this.DTZ * this.KZ / this.DZ * (  this.wm[k+1][i]- 2. * this.wm[k][i] + this.wm[k-1][i] ) ;    /* Diffusion Term */
             }
         }
     }
     
     /* zero gradient for top and bottom */
-    for (var i=1;i<con.NX;i++){
+    for (var i=1;i<this.NX;i++){
         this.wp[0][i]        = 0. ;
         this.wp[1][i]        = 0. ;
-        this.wp[con.NZ-1][i] = 0. ;
+        this.wp[this.NZ-1][i] = 0. ;
     }
     /* Periodic for left and right */
-    for (var k=1;k<con.NZ-1;k++){
-        this.wp[k][0]        = this.wp[k][con.NX-2];
-        this.wp[k][con.NX-1] = this.wp[k][1]   ;
+    for (var k=1;k<this.NZ-1;k++){
+        this.wp[k][0]        = this.wp[k][this.NX-2];
+        this.wp[k][this.NX-1] = this.wp[k][1]   ;
     }
 
 };
@@ -356,38 +352,38 @@ WholeGrid.prototype.compute_dw_dt =function(){
 WholeGrid.prototype.compute_dtheta_dt = function(){
     var con = new Constant() ;
 
-    for (var k=1;k<con.NZ-1;k++){
-        for (var i=1;i<con.NX-1;i++){
+    for (var k=1;k<this.NZ-1;k++){
+        for (var i=1;i<this.NX-1;i++){
             this.thp[k][i]  =
-               -con.DTX *( 
+               -this.DTX *( 
                     0.5 * this.u[k][i+1] * ( this.th[k][i+1] + this.th[k][i  ] ) 
                    -0.5 * this.u[k][i  ] * ( this.th[k][i  ] + this.th[k][i-1] ) 
                 )
-               -con.DTZ / (this.rhou[k]) * ( 
+               -this.DTZ / (this.rhou[k]) * ( 
                     0.5 * this.rhow[k+1] * this.w[k+1][i] * ( this.th[k+1][i] + this.th[k  ][i] ) 
                    -0.5 * this.rhow[k  ] * this.w[k  ][i] * ( this.th[k  ][i] + this.th[k-1][i] ) 
                 )
-               -con.DT / (this.rhou[k]) * (
-                    this.rhow[k+1] * this.w[k+1][i] * ( this.tb[k+1] - this.tb[k  ] ) / con.DZ  
-                   +this.rhow[k  ] * this.w[k  ][i] * ( this.tb[k  ] - this.tb[k-1] ) / con.DZ
+               -this.DT / (this.rhou[k]) * (
+                    this.rhow[k+1] * this.w[k+1][i] * ( this.tb[k+1] - this.tb[k  ] ) / this.DZ  
+                   +this.rhow[k  ] * this.w[k  ][i] * ( this.tb[k  ] - this.tb[k-1] ) / this.DZ
                 )
                +this.thm[k][i] ;
             if ( con.DIFFUSION ){
                 this.thp[k][i]  +=
-                      con.DTX * this.KX/con.DX * (  this.thm[k][i+1] - 2. * this.thm[k][i]  + this.thm[k][i-1] )             
-                    + con.DTZ * this.KZ/con.DZ * (  this.thm[k+1][i] - 2. * this.thm[k][i]  + this.thm[k-1][i] ) ;   /* Diffusion Term */                                                            
+                      this.DTX * this.KX/this.DX * (  this.thm[k][i+1] - 2. * this.thm[k][i]  + this.thm[k][i-1] )             
+                    + this.DTZ * this.KZ/this.DZ * (  this.thm[k+1][i] - 2. * this.thm[k][i]  + this.thm[k-1][i] ) ;   /* Diffusion Term */                                                            
             }                         
         }
     }  
     /* zero gradient for top and bottom */
-    for (var i=1;i<con.NX-1;i++){
+    for (var i=1;i<this.NX-1;i++){
         this.thp[0][i]       = this.thp[1][i] ;
-        this.thp[con.NZ-1][i]= this.thp[con.NZ-2][i] ;
+        this.thp[this.NZ-1][i]= this.thp[this.NZ-2][i] ;
     }
     /* Periodic for left and right */
-    for (var k=1;k<con.NZ-1;k++){
-        this.thp[k][0]        = this.thp[k][con.NX-2];
-        this.thp[k][con.NX-1] = this.thp[k][1];
+    for (var k=1;k<this.NZ-1;k++){
+        this.thp[k][0]        = this.thp[k][this.NX-2];
+        this.thp[k][this.NX-1] = this.thp[k][1];
     }
 
 };
@@ -397,12 +393,12 @@ WholeGrid.prototype.compute_dpi_dt = function(){
     var con = new Constant() ;
     var c_s2 = con.C_S * con.C_S ; // sound speed (adiabatic)
     
-    for (var k=1;k<con.NZ-1;k++){
-        for (var i=1;i<con.NX-1;i++){    
+    for (var k=1;k<this.NZ-1;k++){
+        for (var i=1;i<this.NX-1;i++){    
             this.pip[k][i]=
-               -( c_s2 / ( this.rhou[k] * con.C_P * this.tb[k] * this.tb[k] ) ) * ( 2.* con.DT ) 
-               *(   1./con.DX * this.rhou[k] * this.tb[k] * ( this.u[k][i+1] - this.u[k][i] ) 
-                   +1./con.DZ * ( 
+               -( c_s2 / ( this.rhou[k] * con.C_P * this.tb[k] * this.tb[k] ) ) * ( 2.* this.DT ) 
+               *(   1./this.DX * this.rhou[k] * this.tb[k] * ( this.u[k][i+1] - this.u[k][i] ) 
+                   +1./this.DZ * ( 
                         0.5 * this.rhow[k+1] * this.w[k+1][i] * ( this.tb[k+1] + this.tb[k  ] ) 
                        -0.5 * this.rhow[k  ] * this.w[k  ][i] * ( this.tb[k  ] + this.tb[k-1] ) 
                     ) 
@@ -410,20 +406,20 @@ WholeGrid.prototype.compute_dpi_dt = function(){
                +this.pim[k][i] ;
             if ( con.DIFFUSION ){
                 this.pip[k][i] +=
-                    con.DTX * this.KX/con.DX * (  this.pim[k][i+1]- 2.*this.pim[k][i] + this.pim[k][i-1] )             
-                   +con.DTZ * this.KZ/con.DZ * (  this.pim[k+1][i]- 2.*this.pim[k][i] + this.pim[k-1][i] ) ;   /* Diffusion Term */                  
+                    this.DTX * this.KX/this.DX * (  this.pim[k][i+1]- 2.*this.pim[k][i] + this.pim[k][i-1] )             
+                   +this.DTZ * this.KZ/this.DZ * (  this.pim[k+1][i]- 2.*this.pim[k][i] + this.pim[k-1][i] ) ;   /* Diffusion Term */                  
             }    
         }
     }
     /* zero gradient for top and bottom */
-    for (var i=1;i<con.NX-1;i++){
+    for (var i=1;i<this.NX-1;i++){
         this.pip[0][i]        = this.pip[1][i]    ;
-        this.pip[con.NZ-1][i] = this.pip[con.NZ-2][i] ;
+        this.pip[this.NZ-1][i] = this.pip[this.NZ-2][i] ;
     }
     /* Periodic for left and right */
-    for (var k=1;k<con.NZ-1;k++){
-        this.pip[k][0]        = this.pip[k][con.NX-2];
-        this.pip[k][con.NX-1] = this.pip[k][1];
+    for (var k=1;k<this.NZ-1;k++){
+        this.pip[k][0]        = this.pip[k][this.NX-2];
+        this.pip[k][this.NX-1] = this.pip[k][1];
     }
 
 };
@@ -444,8 +440,8 @@ WholeGrid.prototype.compute_all = function(updatePlot){
     this.compute_dpi_dt()   ;
 
     /* Data pass routine */
-    for (var i=0;i<con.NX;i++){
-        for (var k=0;k<con.NZ;k++){
+    for (var i=0;i<this.NX;i++){
+        for (var k=0;k<this.NZ;k++){
             this.thm[k][i] = this.th[k][i]   ; 
             this.th[k][i]  = this.thp[k][i]  ;
             
@@ -461,7 +457,7 @@ WholeGrid.prototype.compute_all = function(updatePlot){
     }
    
     /* timestep routine */
-    this.currentTime += con.DT ;        
+    this.currentTime += this.DT ;        
     if ( updatePlot ) this.updatePlot() ;
 };
 
@@ -554,6 +550,11 @@ function updateControlValue(){
     $('#init_imid').val(grid.imid);
     $('#init_KX').val(grid.KX);
     $('#init_KZ').val(grid.KZ);
+    $('#init_DT').val(grid.DT);
+    $('#init_DX').val(grid.DX);
+    $('#init_DZ').val(grid.DZ);
+    $('#init_NX').val(grid.NX);
+    $('#init_NZ').val(grid.NZ);
 }
 
 

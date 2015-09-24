@@ -55,59 +55,71 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 class="modal-title">設定模式參數</h4>
+                        <h4 class="modal-title">模式參數設定面板</h4>
                     </div>
                     <div class="modal-body">
                         <div class="container-fluid">
                             <div class="row">
-                                <div class="col-md-6 col-lg-6">
+                                <div class="col-md-4 col-lg-4">
                                     <form role="paraForm">
                                         <div class="form-group">
-                                            <label for="init_delta">位溫擾動[K]</label>
-                                            <input type="number" class="form-control" id="init_delta" placeholder="EX : 10.0 or -3.3">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="init_radx">Thremal寬度[m]</label>
-                                            <input type="number" class="form-control" id="init_radx" placeholder="EX : 1000">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="init_radz">Thremal高度[m]</label>
+                                            <label for="init_radz">熱胞高度[m]</label>
                                             <input type="number" class="form-control" id="init_radz" placeholder="EX : 1000">
-                                        </div>
+                                        </div>                                    
                                         <div class="form-group">
-                                            <label for="init_zcnt">Thremal中心高度[m]</label>
+                                            <label for="init_zcnt">熱胞中心高度[m]</label>
                                             <input type="number" class="form-control" id="init_zcnt" placeholder="EX : 1000">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="init_imid">Thermal中心位移格數[網格]</label>
-                                            <input type="number" class="form-control" id="init_imid" placeholder="EX : 30">
-                                        </div>                        
-                                    </form>
-                                </div>
-                                <div class="col-md-6 col-lg-6">
-                                    <form role="paraForm">
-                                        <div class="form-group">
-                                            <label for="init_KX">水平向黏滯力[m^2/s]</label>
-                                            <input type="number" class="form-control" id="init_KX" placeholder="EX : 75">
                                         </div>
                                         <div class="form-group">
                                             <label for="init_KZ">垂直向黏滯力[m^2/s]</label>
                                             <input type="number" class="form-control" id="init_KZ" placeholder="EX : 75">
-                                        </div>
+                                        </div>                                        
                                         <div class="form-group">
-                                            <label for="init_radz">Thremal高度[m]XXX</label>
-                                            <input type="number" class="form-control" id="NOinit_radz" placeholder="EX : 1000">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="init_zcnt">Thremal中心高度[m]XXX</label>
-                                            <input type="number" class="form-control" id="NOinit_zcnt" placeholder="EX : 1000">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="init_imid">Thermal中心位移格數[網格]XXXX</label>
-                                            <input type="number" class="form-control" id="NOinit_imid" placeholder="EX : 30">
-                                        </div>                        
+                                            <label for="init_delta">位溫擾動[K]</label>
+                                            <input type="number" class="form-control" id="init_delta" placeholder="EX : 10.0 or -3.3">
+                                        </div>                   
                                     </form>
-                                </div>                                
+                                </div>
+                                <div class="col-md-4 col-lg-4">
+                                    <form role="paraForm">
+                                        <div class="form-group">
+                                            <label for="init_radx">熱胞寬度[m]</label>
+                                            <input type="number" class="form-control" id="init_radx" placeholder="EX : 1000">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="init_imid">熱胞中心位移[格]</label>
+                                            <input type="number" class="form-control" id="init_imid" placeholder="EX : 30">
+                                        </div>                                             
+                                        <div class="form-group">
+                                            <label for="init_KX">水平向黏滯力[m^2/s]</label>
+                                            <input type="number" class="form-control" id="init_KX" placeholder="EX : 75">
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-4 col-lg-4">
+                                    <form role="paraForm">
+                                        <div class="form-group has-error">
+                                            <label class="control-label" for="init_DX">網格寬度[m]</label>
+                                            <input type="number" class="form-control" id="init_DX" placeholder="EX : 100">
+                                        </div>
+                                        <div class="form-group has-error">
+                                            <label class="control-label" for="init_DZ">網格高度[m]</label>
+                                            <input type="number" class="form-control" id="init_DZ" placeholder="EX : 100">
+                                        </div>
+                                        <div class="form-group has-error">
+                                            <label class="control-label" for="init_NX">水平格數[格]</label>
+                                            <input type="number" class="form-control" id="init_NX" placeholder="EX : 380">
+                                        </div> 
+                                        <div class="form-group has-error">
+                                            <label class="control-label" for="init_NZ">垂直格數[格]</label>
+                                            <input type="number" class="form-control" id="init_NZ" placeholder="EX : 64">
+                                        </div>
+                                        <div class="form-group has-error">
+                                            <label class="control-label" for="init_DT">積分時步[s]</label>
+                                            <input type="number" class="form-control" id="init_DT" placeholder="EX : 0.5">
+                                        </div>                                             
+                                    </form> 
+                                </div>
                             </div>
                         </div>
                     </div>
