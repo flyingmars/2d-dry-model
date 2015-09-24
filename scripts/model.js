@@ -494,10 +494,10 @@ function pressRun(iter_final){
     var iter_now = 0  ;
     
     var showBar = function(){
-        $('#progressBarDiv').show() ;
+        $('#progressBarDiv').css('visibility','visible') ;
     };
     var fadeBar = function(){
-        $('#progressBarDiv').hide() ;
+        $('#progressBarDiv').css('visibility','hidden') ;
         $('#runProgress').data('progress' , 0 );
         $('#runProgress').css({ 'width' : '0%' }) ;
         $('#runProgress').html( '0%' );           
