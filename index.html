@@ -1,10 +1,21 @@
-<html>
+<html
+xmlns:og="http://ogp.me/ns#" 
+xmlns:fb="http://www.facebook.com/2008/fbml"
+>
     <title>熱胞模擬數值模式</title>
-    <meta name="description" content="以Javascript實作的簡單二維熱胞模擬數值模式，供大氣熱力學上課使用。">
-    <meta name="keywords" content="大氣熱力學,數值模式">
+    <meta name="og:title" content="線上熱胞模擬數值模式" />
+    <meta name="og:description" content="以Javascript實作的簡單二維熱胞模擬數值模式，主要提供大氣熱力學上課使用。" />
+    <meta property="og:url" content="http://flyingmars.github.io/2DDryModel/"/>
+    <meta property="og:site_name" content="熱胞模擬數值模式" />
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="img/icon.jpg"/>
+    <meta property="fb:app_id" content="1486211361679974" />
+    <meta property="fb:admins" content="管理者 fid"/>
+    
     <meta name="author" content="Chen,Yi-Chang">
     <meta name="distribution" content="Taiwan">
-    <meta http-equiv="Content-Language" content="zh-TW">
+    <meta http-equiv="Content-Language" content="zh-TW">   
+    <meta name="keywords" content="大氣熱力學,數值模式">
     <meta charset="UTF-8">
     
 	<head>
@@ -21,6 +32,25 @@
 
 	</head>
 	<body>
+        <!-- Facebook SDK -->
+        <script>
+          window.fbAsyncInit = function() {
+            FB.init({
+              appId      : '1486211361679974',
+              xfbml      : true,
+              version    : 'v2.4'
+            });
+          };
+
+          (function(d, s, id){
+             var js, fjs = d.getElementsByTagName(s)[0];
+             if (d.getElementById(id)) {return;}
+             js = d.createElement(s); js.id = id;
+             js.src = "//connect.facebook.net/en_US/sdk.js";
+             fjs.parentNode.insertBefore(js, fjs);
+           }(document, 'script', 'facebook-jssdk'));
+        </script>
+        <!--End of  Facebook SDK -->
         <div class="container-fluid">
             <div class="row" >
                 <div class="col-md-1 col-lg-1"></div>
@@ -51,7 +81,9 @@
                     <br />
                     <div id="progressBarDiv" class="progress" style="display:none">
                         <div class="progress-bar progress-bar-striped active" data-progress="0" id="runProgress" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" >0%</div>
-                    </div>         
+                    </div>
+                    <br />
+                    <div class="fb-like"  data-share="true" data-width="450" data-show-faces="true"></div>
                 </div>
                 <div class="col-md-2 col-lg-2"></div>
             </div>
@@ -125,7 +157,7 @@
                                         <div class="form-group has-error">
                                             <label class="control-label" for="init_DT">積分時步[s]</label>
                                             <input type="number" class="form-control" id="init_DT" placeholder="EX : 0.5">
-                                        </div>                                             
+                                        </div>                         
                                     </form> 
                                 </div>
                             </div>
