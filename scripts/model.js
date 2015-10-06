@@ -14,7 +14,6 @@ function Constant(){
     this.EINISHTIME = 900.0 ;
     // Flag
     this.DIFFUSION = true ;
-    this.NEUTRAL = true ;
     
 }
 
@@ -24,6 +23,7 @@ function WholeGrid(){
     this.timePerGraph = 1  ;
     this.currentTime  = 0  ;
     this.timeEnd      = 50 ;
+    this.NEUTRAL      = true ;
     // Grid Setting
     this.NX  = parseInt( $('#init_NX').val() ) || 380 ;
     this.NZ  = parseInt( $('#init_NZ').val() ) || 64  ;
@@ -120,8 +120,8 @@ WholeGrid.prototype.baseState_OneDimension_Initialization = function(){
     var x_k          = con.R_D / con.C_P ;
     
     this.pb[1]  = con.PSURF ;
-    this.tb[1]  = con.NEUTRAL ? 300.0 : this.base_ThetaBar_Distribution(1) ;
-    this.qb[1]  = con.NEUTRAL ? 0.0   : this.base_QvBar_Distribution(1)    ;
+    this.tb[1]  = this.NEUTRAL ? 300.0 : this.base_ThetaBar_Distribution(1) ;
+    this.qb[1]  = this.NEUTRAL ? 0.0   : this.base_QvBar_Distribution(1)    ;
     
     tbv_previous  = this.tb[1] * (1 + 0.61 * this.qb[1] );
     
@@ -131,8 +131,8 @@ WholeGrid.prototype.baseState_OneDimension_Initialization = function(){
     this.rhow[1] = this.rhou[1];
 
     for ( var k=2 ; k <= this.NZ - 2 ; k++ ){
-        this.tb[k]  = con.NEUTRAL ? 300.0 : this.base_ThetaBar_Distribution(k) ;
-        this.qb[k]  = con.NEUTRAL ? 0.0   : this.base_QvBar_Distribution(k)  ;        
+        this.tb[k]  = this.NEUTRAL ? 300.0 : this.base_ThetaBar_Distribution(k) ;
+        this.qb[k]  = this.NEUTRAL ? 0.0   : this.base_QvBar_Distribution(k)  ;        
         tbv_current = this.tb[k] * ( 1 + 0.61 * this.qb[k] );
         tbvavg = 0.5 * ( tbv_current + tbv_previous ) ;
         
@@ -244,7 +244,7 @@ WholeGrid.prototype.base_ThetaBar_Distribution = function(z_grid_index){
     var z_TR     = 12000;        //[m] Height level of Tropopause
     var T_TR     = 213;          //[K] Temperature of Tropopause
     var Theta_TR = 343;          //[K] Potential Temperature of Tropopause
-    var z_T      = ( z_grid_index - 0.5 ) * DZ ;    
+    var z_T      = ( z_grid_index - 0.5 ) * this.DZ ;    
     
     if( z_T <= z_TR){
         return ( 300 + 43 * Math.pow( z_T / z_TR , 1.25 ) ) ;
