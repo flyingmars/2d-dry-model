@@ -65,7 +65,7 @@ function WholeGrid(){
     // For Plot
     this.xgrid = new Array(this.NX);
     this.zgrid = new Array(this.NZ);
-    this.viewT = true ;
+    this.viewT = $('#changeView').data('myflag') || 1  ;
     // Initailize
     for ( var k=0 ; k < this.NZ ; k++){
         this.tb[k]    = 0 ;
@@ -479,7 +479,7 @@ WholeGrid.prototype.compute_all = function(updatePlot){
 
 
 WholeGrid.prototype.newPlot = function(){   
-    if ( this.viewT ){
+    if ( this.viewT == 2 ){
         var data =  [{
                         x : this.xgrid,
                         y : this.zgrid,
@@ -505,7 +505,7 @@ WholeGrid.prototype.newPlot = function(){
 
 
 WholeGrid.prototype.updatePlot = function(){
-    if ( this.viewT ){
+    if ( this.viewT == 2 ){
         modelShow.data.push({
             z : this.realT 
         }) ;
@@ -521,12 +521,13 @@ WholeGrid.prototype.updatePlot = function(){
 
 
 function changeView(){
-    if ( grid.viewT ){
+    if ( grid.viewT == 2 ){
         $('#changeView').html('看溫度場');
     }else{
         $('#changeView').html('看位溫場');
     }
-    grid.viewT = !grid.viewT ;    
+    grid.viewT = (grid.viewT==2) ? 1 : 2 ;
+    $('#changeView').data('myflag',grid.viewT);
     grid.newPlot() ;
 
 }
