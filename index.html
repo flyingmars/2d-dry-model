@@ -19,15 +19,15 @@ xmlns:fb="http://www.facebook.com/2008/fbml"
     
 	<head>
 		<!-- D3.js -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+		<script src="scripts/d3.min.js"></script>
 		<!-- jQuery -->
-		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script src="scripts/jquery-2.1.4.min.js"></script>
 		<!-- Plotly.js -->
-		<script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
+		<script src="scripts/plotly-basic.js"></script>
         <!-- Bootstrap -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <script src="scripts/bootstrap.min.js"></script>
         <!-- Icon -->
         <link rel="shortcut icon" href="img/icon_small.ico">    
 	</head>
@@ -60,6 +60,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml"
             <div class="row">
                 <div class="col-md-12 col-lg-12 text-center">
                     <div id="controlPanel">
+                        <button type="button" id="changeView" class="btn btn-default" onclick="changeView()">看位溫場</button>
                         <button type="button" id="autoRunBtn" class="btn btn-default" onclick="autoRun()" data-myflag="1" >自動積分</button>
                         <button type="button" class="btn btn-default" onclick="pressRun()">時步積分</button>
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setParameter">設定參數</button>
@@ -121,23 +122,11 @@ xmlns:fb="http://www.facebook.com/2008/fbml"
                                         </div>
                                         <div class="form-group">
                                             <label for="init_imid">熱胞中心位移[格]</label>
-                                            <input type="number" class="form-control" id="init_imid" placeholder="EX : 30">
+                                            <input type="number" class="form-control" id="init_imid" placeholder="EX : 30 （置中:0）">
                                         </div>                                             
                                         <div class="form-group">
                                             <label for="init_KX">水平向黏滯力[m^2/s]</label>
                                             <input type="number" class="form-control" id="init_KX" placeholder="EX : 75">
-                                        </div>
-                                    
-                                        <div class="form-group">
-                                            <label for="init_Pro">垂直溫度剖面</label>
-                                            <button class="btn btn-default btn-block dropdown-toggle" type="button" id="init_Pro" data-toggle="dropdown" aria-expanded="true">
-                                                溫度剖面
-                                                <span class="caret"></span>
-                                            </button>
-                                            <ul class="dropdown-menu" role="menu" aria-labelledby="init_Pro">
-                                                <li role="presentation"><a role="menuitem" tabindex="1" href="#">Isothermal</a></li>
-                                                <li role="presentation"><a role="menuitem" tabindex="2" href="#">Isentropic</a></li>
-                                            </ul>
                                         </div>
                                     </form>
                                 </div>

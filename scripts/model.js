@@ -39,6 +39,7 @@ function WholeGrid(){
     this.pib   = new Array(this.NZ) ;
     this.rhou  = new Array(this.NZ) ;
     this.rhow  = new Array(this.NZ) ;
+    this.realT = new Array(this.NZ) ;
     // progonstic arrays 
     this.thp   = new Array(this.NZ);
     this.th    = new Array(this.NZ);
@@ -64,7 +65,7 @@ function WholeGrid(){
     // For Plot
     this.xgrid = new Array(this.NX);
     this.zgrid = new Array(this.NZ);
-
+    this.viewT = true ;
     // Initailize
     for ( var k=0 ; k < this.NZ ; k++){
         this.tb[k]    = 0 ;
@@ -85,6 +86,7 @@ function WholeGrid(){
         this.pip[k]   = new Array(this.NX);
         this.pi[k]    = new Array(this.NX);
         this.pim[k]   = new Array(this.NX);
+        this.realT[k] = new Array(this.NX);
         for ( var i=0 ; i < this.NX ; i++){
             this.thp[k][i]    = 0;
             this.th[k][i]     = 0;
@@ -152,7 +154,9 @@ WholeGrid.prototype.baseState_OneDimension_Initialization = function(){
     this.rhow[0]         = this.rhow[1];
     this.rhow[this.NZ-1] = this.rhow[this.NZ-2];
     this.qb[0]           = this.qb[1];
-    this.qb[this.NZ-1]   = this.qb[this.NZ-2];        
+    this.qb[this.NZ-1]   = this.qb[this.NZ-2];
+    this.pb[0]           = this.pb[1];
+    this.pb[this.NZ-1]   = this.pb[this.NZ-2];           
 };
 
 WholeGrid.prototype.perturbation_Initialization_Cold = function(){
@@ -188,7 +192,12 @@ WholeGrid.prototype.perturbation_Initialization_Cold = function(){
         this.pi[0][i]  = this.pi[1][i];
         this.pim[0][i] = this.pim[1][i];            
     }
-
+    
+    for ( var k=0 ; k < this.NZ ; k++){
+        for ( var i=0 ; i < this.NX ; i++){
+            this.realT[k][i]    = (this.th[k][i]+this.tb[k]) * Math.pow( this.pb[k] / con.PSURF , con.R_D / con.C_P)  ;
+        }
+    }   
 };
 
 WholeGrid.prototype.perturbation_Initialization = function(){
@@ -234,7 +243,6 @@ WholeGrid.prototype.perturbation_Initialization = function(){
         this.pi[0][i]  = this.pi[1][i] ;
         this.pim[0][i] = this.pim[1][i];
     }
-
 };
 
 
@@ -455,22 +463,39 @@ WholeGrid.prototype.compute_all = function(updatePlot){
             this.pi[k][i]  = this.pip[k][i]  ;
         }    
     }
-   
+    /* Compute Actually T */
+    var realT = new Array(this.NZ) ;
+    var con   = new Constant() ;
+    
+    for ( var k=0 ; k < this.NZ ; k++){
+        for ( var i=0 ; i < this.NX ; i++){
+            this.realT[k][i]    = (this.th[k][i]+this.tb[k]) * Math.pow( this.pb[k] / con.PSURF , con.R_D / con.C_P)  ;
+        }
+    }   
     /* timestep routine */
     this.currentTime += this.DT ;        
     if ( updatePlot ) this.updatePlot() ;
 };
 
 
-WholeGrid.prototype.newPlot = function(){
-    
-    var data =  [{
-                    x : this.xgrid,
-                    y : this.zgrid,
-                    z : this.th ,
-                    type  : 'heatmap'
+WholeGrid.prototype.newPlot = function(){   
+    if ( this.viewT ){
+        var data =  [{
+                        x : this.xgrid,
+                        y : this.zgrid,
+                        z : this.realT ,
+                        type  : 'heatmap'
 
-                }] ;
+                    }] ;
+    }else{
+        var data =  [{
+                        x : this.xgrid,
+                        y : this.zgrid,
+                        z : this.th ,
+                        type  : 'heatmap'
+
+                    }] ;        
+    }
     var layout = {
         title : 'Time = '  + 0.0 + ' (sec) '
     } ; 
@@ -480,16 +505,33 @@ WholeGrid.prototype.newPlot = function(){
 
 
 WholeGrid.prototype.updatePlot = function(){
-    
-    modelShow.data.push({
-        z : this.th ,
-    }) ;
+    if ( this.viewT ){
+        modelShow.data.push({
+            z : this.realT 
+        }) ;
+        console.log('change');
+    }else{
+        modelShow.data.push({
+            z : this.th 
+        }) ;        
+    }
     modelShow.layout.title = 'Time = ' + this.currentTime + ' (sec) ' ;
     Plotly.redraw(modelShow) ;
 };
 
+
+function changeView(){
+    if ( grid.viewT ){
+        $('#changeView').html('看溫度場');
+    }else{
+        $('#changeView').html('看位溫場');
+    }
+    grid.viewT = !grid.viewT ;    
+    grid.newPlot() ;
+
+}
+
 function pressRun(iter_final){
-    console.log(iter_final);
     var iter_max = iter_final || 99 ;
     var iter_now = 0  ;
     
@@ -533,6 +575,21 @@ function pressRun(iter_final){
     setTimeout( calculate , 0 ) ;
 }
 
+function autoRun(){   
+    var flag = $('#autoRunBtn').data('myflag');    
+    if ( flag == 1 ){
+        $('#autoRunBtn').html('停止積分');
+        intevalFunction = setInterval( "pressRun(20)" , 500 );
+    }else{
+        $('#autoRunBtn').html('自動積分');        
+        clearInterval( intevalFunction ) ;
+        console.log('clearInt');
+    }
+    $('#autoRunBtn').data('myflag',(flag+1)%2);
+}
+
+
+
 function updateParameter(event){
     event.preventDefault() ;
     grid = new WholeGrid() ;
@@ -565,22 +622,6 @@ grid.baseState_OneDimension_Initialization();
 grid.perturbation_Initialization_Cold();
 grid.newPlot() ;
 updateControlValue() ;
-
-function autoRun(){
-    
-    var flag = $('#autoRunBtn').data('myflag');
-    
-    if ( flag == 1 ){
-        $('#autoRunBtn').html('停止積分');
-        intevalFunction = setInterval( "pressRun(20)" , 500 );
-        console.log('startInt');
-    }else{
-        $('#autoRunBtn').html('自動積分');        
-        clearInterval( intevalFunction ) ;
-        console.log('clearInt');
-    }
-    $('#autoRunBtn').data('myflag',(flag+1)%2);
-}
 
 
 
