@@ -497,7 +497,7 @@ WholeGrid.prototype.newPlot = function(){
                     }] ;        
     }
     var layout = {
-        title : 'Time = '  + 0.0 + ' (sec) '
+        title : 'Time = '  + this.currentTime + ' (sec) '
     } ; 
     Plotly.newPlot(modelShow, data, layout);
 
