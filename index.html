@@ -113,7 +113,15 @@ xmlns:fb="http://www.facebook.com/2008/fbml"
                                         <div class="form-group">
                                             <label for="init_delta">位溫擾動[K]</label>
                                             <input type="number" class="form-control" id="init_delta" placeholder="EX : 10.0 or -3.3">
-                                        </div>                   
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="init_bg_profile">背景溫度場變化？</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <input type="checkbox" id="init_bg_profile" >
+                                                </span>
+                                            </div><!-- /input-group -->        
+                                        </div>                                               
                                     </form>
                                 </div>
                                 <div class="col-md-4 col-lg-4">
@@ -129,6 +137,14 @@ xmlns:fb="http://www.facebook.com/2008/fbml"
                                         <div class="form-group">
                                             <label for="init_KX">水平向黏滯力[m^2/s]</label>
                                             <input type="number" class="form-control" id="init_KX" placeholder="EX : 75">
+                                        </div>
+                                        <div class="form-group has-warning">
+                                            <label for="init_sfc_temp">地表溫度[K]</label>
+                                            <input type="number" class="form-control" id="init_sfc_temp" placeholder="EX : 300">
+                                        </div>
+                                        <div class="form-group has-warning">
+                                            <label for="init_top_temp">頂層溫度[K]</label>
+                                            <input type="number" class="form-control" id="init_top_temp" placeholder="EX : 240">
                                         </div>
                                     </form>
                                 </div>

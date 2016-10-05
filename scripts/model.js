@@ -23,7 +23,7 @@ function WholeGrid(){
     this.timePerGraph = 1  ;
     this.currentTime  = 0  ;
     this.timeEnd      = 50 ;
-    this.NEUTRAL      = true ;
+    this.NEUTRAL      = !$('#init_bg_profile').prop('checked') ;
     // Grid Setting
     this.NX  = parseInt( $('#init_NX').val() ) || 380 ;
     this.NZ  = parseInt( $('#init_NZ').val() ) || 64  ;
@@ -31,7 +31,7 @@ function WholeGrid(){
     this.DZ  = parseInt( $('#init_DZ').val() ) || 100 ; 
     this.DT  = parseFloat( $('#init_DT').val() ) || 0.5 ;
     this.DTX = 2.0 * this.DT / this.DX ;
-    this.DTZ = 2.0 * this.DT / this.DX ;    
+    this.DTZ = 2.0 * this.DT / this.DX ; 
     // Base state arrays
     this.tb    = new Array(this.NZ) ;
     this.qb    = new Array(this.NZ) ;
@@ -59,6 +59,8 @@ function WholeGrid(){
     this.radx  = parseFloat( $('#init_radx').val()  ) || 4000 ;
     this.radz  = parseFloat( $('#init_radz').val()  ) || 2000 ;
     this.imid  = parseInt  ( $('#init_imid').val()  ) || (( this.NX % 2 == 0 ) ? this.NX/2 : (this.NX-1.0)/2) ;
+    this.sfcT  = parseFloat( $('#init_sfc_temp').val() ) || 300 ; 
+    this.topT  = parseFloat( $('#init_top_temp').val() ) || 240 ; 
     // Diffusion Term
     this.KX    = parseFloat( $('#init_KX').val() ) || 75 ;
     this.KZ    = parseFloat( $('#init_KZ').val() ) || 75 ;        
@@ -122,8 +124,9 @@ WholeGrid.prototype.baseState_OneDimension_Initialization = function(){
     var x_k          = con.R_D / con.C_P ;
     
     this.pb[1]  = con.PSURF ;
+    console.log(this.NEUTRAL);
     this.tb[1]  = this.NEUTRAL ? 300.0 : this.base_ThetaBar_Distribution(1) ;
-    this.qb[1]  = this.NEUTRAL ? 0.0   : this.base_QvBar_Distribution(1)    ;
+    this.qb[1]  = true ? 0.0   : this.base_QvBar_Distribution(1)    ;
     
     tbv_previous  = this.tb[1] * (1 + 0.61 * this.qb[1] );
     
@@ -134,7 +137,7 @@ WholeGrid.prototype.baseState_OneDimension_Initialization = function(){
 
     for ( var k=2 ; k <= this.NZ - 2 ; k++ ){
         this.tb[k]  = this.NEUTRAL ? 300.0 : this.base_ThetaBar_Distribution(k) ;
-        this.qb[k]  = this.NEUTRAL ? 0.0   : this.base_QvBar_Distribution(k)  ;        
+        this.qb[k]  = true ? 0.0   : this.base_QvBar_Distribution(k)  ;        
         tbv_current = this.tb[k] * ( 1 + 0.61 * this.qb[k] );
         tbvavg = 0.5 * ( tbv_current + tbv_previous ) ;
         
@@ -254,12 +257,21 @@ WholeGrid.prototype.base_ThetaBar_Distribution = function(z_grid_index){
     var Theta_TR = 343;          //[K] Potential Temperature of Tropopause
     var z_T      = ( z_grid_index - 0.5 ) * this.DZ ;    
     
+
+    var ori_temperature = 
+        this.sfcT + ( this.topT - this.sfcT ) / (this.NZ) * z_grid_index ;    
+    if ( z_grid_index >=2 ){
+        return ( ori_temperature * Math.pow( con.PSURF /this.pb[z_grid_index-1] , con.R_D / con.C_P) ) ;
+    }else{
+        return ( ori_temperature ) ;
+    }
+    /*
     if( z_T <= z_TR){
         return ( 300 + 43 * Math.pow( z_T / z_TR , 1.25 ) ) ;
     }else{
         return ( Theta_TR * Math.exp( con.GRAVITY * ( z_T - z_TR ) / ( con.C_P * T_TR ) ) ) ;
     }
-
+    */
 };
 
 
@@ -613,6 +625,8 @@ function updateControlValue(){
     $('#init_DZ').val(grid.DZ);
     $('#init_NX').val(grid.NX);
     $('#init_NZ').val(grid.NZ);
+    $('#init_sfc_temp').val(grid.sfcT);
+    $('#init_top_temp').val(grid.topT);
 }
 
 
