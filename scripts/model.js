@@ -17,19 +17,20 @@ function Constant(){
     
 }
 
-function WholeGrid(){
-    var con   = new Constant() ;    
+function WholeGrid(options){
+    options = options || {};
+    var con   = new Constant() ;
     // Time Maintain variable
     this.timePerGraph = 1  ;
     this.currentTime  = 0  ;
     this.timeEnd      = 50 ;
-    this.NEUTRAL      = !$('#init_bg_profile').prop('checked') ;
+    this.NEUTRAL      = !options.bg_profile ;
     // Grid Setting
-    this.NX  = parseInt( $('#init_NX').val() ) || 380 ;
-    this.NZ  = parseInt( $('#init_NZ').val() ) || 64  ;
-    this.DX  = parseInt( $('#init_DX').val() ) || 100 ;
-    this.DZ  = parseInt( $('#init_DZ').val() ) || 100 ; 
-    this.DT  = parseFloat( $('#init_DT').val() ) || 0.5 ;
+    this.NX  = parseInt( options.NX ) || 380 ;
+    this.NZ  = parseInt( options.NZ ) || 64  ;
+    this.DX  = parseInt( options.DX ) || 100 ;
+    this.DZ  = parseInt( options.DZ ) || 100 ;
+    this.DT  = parseFloat( options.DT ) || 0.5 ;
     this.DTX = 2.0 * this.DT / this.DX ;
     this.DTZ = 2.0 * this.DT / this.DX ; 
     // Base state arrays
@@ -54,20 +55,20 @@ function WholeGrid(){
     this.pi    = new Array(this.NZ);
     this.pim   = new Array(this.NZ);
     // User Change Parameter
-    this.zcnt  = parseFloat( $('#init_zcnt').val()  ) || 3000 ;
-    this.delta = parseFloat( $('#init_delta').val() ) || -15 ;
-    this.radx  = parseFloat( $('#init_radx').val()  ) || 4000 ;
-    this.radz  = parseFloat( $('#init_radz').val()  ) || 2000 ;
-    this.imid  = parseInt  ( $('#init_imid').val()  ) || (( this.NX % 2 == 0 ) ? this.NX/2 : (this.NX-1.0)/2) ;
-    this.sfcT  = parseFloat( $('#init_sfc_temp').val() ) || 300 ; 
-    this.topT  = parseFloat( $('#init_top_temp').val() ) || 240 ; 
+    this.zcnt  = parseFloat( options.zcnt )  || 3000 ;
+    this.delta = parseFloat( options.delta ) || -15 ;
+    this.radx  = parseFloat( options.radx )  || 4000 ;
+    this.radz  = parseFloat( options.radz )  || 2000 ;
+    this.imid  = parseInt  ( options.imid ) || (( this.NX % 2 == 0 ) ? this.NX/2 : (this.NX-1.0)/2) ;
+    this.sfcT  = parseFloat( options.sfc_temp ) || 300 ;
+    this.topT  = parseFloat( options.top_temp ) || 240 ;
     // Diffusion Term
-    this.KX    = parseFloat( $('#init_KX').val() ) || 75 ;
-    this.KZ    = parseFloat( $('#init_KZ').val() ) || 75 ;        
+    this.KX    = parseFloat( options.KX ) || 75 ;
+    this.KZ    = parseFloat( options.KZ ) || 75 ;
     // For Plot
     this.xgrid = new Array(this.NX);
     this.zgrid = new Array(this.NZ);
-    this.viewT = $('#changeView').data('myflag') || 1  ;
+    this.viewT = options.viewT || 1  ;
     // Initailize
     for ( var k=0 ; k < this.NZ ; k++){
         this.tb[k]    = 0 ;
@@ -323,8 +324,8 @@ WholeGrid.prototype.compute_du_dt = function(){
     }
     /* Periodic for left and right */
     for (var k=1;k<this.NZ-1;k++){
-        this.up[k][0]        = grid.up[k][this.NX-2];
-        this.up[k][this.NX-1] = grid.up[k][1];
+        this.up[k][0]        = this.up[k][this.NX-2];
+        this.up[k][this.NX-1] = this.up[k][1];
     }
     
 };
@@ -532,111 +533,32 @@ WholeGrid.prototype.updatePlot = function(){
 };
 
 
-function changeView(){
-    if ( grid.viewT == 2 ){
-        $('#changeView').html('看溫度場');
-    }else{
-        $('#changeView').html('看位溫場');
-    }
-    grid.viewT = (grid.viewT==2) ? 1 : 2 ;
-    $('#changeView').data('myflag',grid.viewT);
-    grid.newPlot() ;
 
-}
-
-function pressRun(iter_final){
+function pressRun(grid, iter_final, progressCallback, doneCallback){
     var iter_max = iter_final || 99 ;
     var iter_now = 0  ;
-    
-    var showBar = function(){
-        $('#progressBarDiv').css('visibility','visible') ;
-    };
-    var fadeBar = function(){
-        $('#progressBarDiv').css('visibility','hidden') ;
-        $('#runProgress').data('progress' , 0 );
-        $('#runProgress').css({ 'width' : '0%' }) ;
-        $('#runProgress').html( '0%' );           
-    };  
-    var updateBar = function(){
-        var percent = Math.round( iter_now/ iter_max * 100 ) ;
-        $('#runProgress').data('progress',percent);
-        $('#runProgress').css({ 'width' : percent + '%' }) ;
-        $('#runProgress').html(percent + '%' );   
-    };
-    
+
     var calculate = function(){
-        var index = 0 ; 
+        var index = 0 ;
         while ( index < 11 && iter_now < iter_max ){
             grid.compute_all(false) ;
             iter_now++ ;
             index++ ;
         }
-        updateBar();
-        
+        if (progressCallback) progressCallback( iter_now / iter_max * 100 );
+
         if( iter_now == iter_max ){
             grid.compute_all(true);
-            updateBar();
-            fadeBar();
+            if (progressCallback) progressCallback(100);
+            if (doneCallback) doneCallback();
         }else{
             setTimeout( calculate , 30 ) ;
         }
     };
-    
-    
-    //setInterval( calculate , 200 )  ;
-    showBar() ;
+
     setTimeout( calculate , 0 ) ;
 }
 
-function autoRun(){   
-    var flag = $('#autoRunBtn').data('myflag');    
-    if ( flag == 1 ){
-        $('#autoRunBtn').html('停止積分');
-        intevalFunction = setInterval( "pressRun(20)" , 500 );
-    }else{
-        $('#autoRunBtn').html('自動積分');        
-        clearInterval( intevalFunction ) ;
-        console.log('clearInt');
-    }
-    $('#autoRunBtn').data('myflag',(flag+1)%2);
-}
-
-
-
-function updateParameter(event){
-    event.preventDefault() ;
-    grid = new WholeGrid() ;
-    grid.baseState_OneDimension_Initialization();
-    grid.perturbation_Initialization_Cold();
-    grid.newPlot() ;
-    updateControlValue() ;
-}
-
-function updateControlValue(){
-    $('#init_delta').val(grid.delta);
-    $('#init_radx').val(grid.radx);
-    $('#init_radz').val(grid.radz);
-    $('#init_zcnt').val(grid.zcnt);
-    $('#init_imid').val(grid.imid);
-    $('#init_KX').val(grid.KX);
-    $('#init_KZ').val(grid.KZ);
-    $('#init_DT').val(grid.DT);
-    $('#init_DX').val(grid.DX);
-    $('#init_DZ').val(grid.DZ);
-    $('#init_NX').val(grid.NX);
-    $('#init_NZ').val(grid.NZ);
-    $('#init_sfc_temp').val(grid.sfcT);
-    $('#init_top_temp').val(grid.topT);
-}
-
-
-var grid = new WholeGrid() ;
-var intevalFunction = null ;
-
-grid.baseState_OneDimension_Initialization();
-grid.perturbation_Initialization_Cold();
-grid.newPlot() ;
-updateControlValue() ;
 
 
 
