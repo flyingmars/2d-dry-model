@@ -32,7 +32,7 @@ function WholeGrid(options){
     this.DZ  = parseInt( options.DZ ) || 100 ;
     this.DT  = parseFloat( options.DT ) || 0.5 ;
     this.DTX = 2.0 * this.DT / this.DX ;
-    this.DTZ = 2.0 * this.DT / this.DX ; 
+    this.DTZ = 2.0 * this.DT / this.DZ ;
     // Base state arrays
     this.tb    = new Array(this.NZ) ;
     this.qb    = new Array(this.NZ) ;

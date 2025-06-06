@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>熱胞模擬數值模式</title>
-  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-3vye0mCi5uVnBZKnOIgNI9L4MoIuByBdoMNBtYzUgQ4YefC0G1pYjOdWlAbdB2Lj" crossorigin="anonymous">
   <link rel="shortcut icon" href="img/icon_small.ico">
   <script src="scripts/d3.min.js"></script>
-  <script src="scripts/jquery-2.1.4.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="scripts/plotly-basic.js"></script>
   <script src="https://unpkg.com/vue@3"></script>
 </head>
@@ -24,7 +24,7 @@
         <button type="button" class="btn btn-secondary" @click="changeView">{{ viewT === 2 ? '看位溫場' : '看溫度場' }}</button>
         <button type="button" class="btn btn-secondary" @click="autoRun">{{ autoRunning ? '停止積分' : '自動積分' }}</button>
         <button type="button" class="btn btn-secondary" @click="runStep">時步積分</button>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#setParameter">設定參數</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setParameter">設定參數</button>
       </div>
     </div>
   </div>
@@ -43,7 +43,9 @@
     <form @submit.prevent="updateParameter" class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">模式參數設定面板</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         <div class="row">
@@ -116,15 +118,15 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">更新參數</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+        <button type="submit" class="btn btn-primary" data-dismiss="modal">更新參數</button>
       </div>
     </form>
   </div>
 </div>
 
 <script src="scripts/model.js"></script>
-<script src="scripts/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc4b3p6k9R/+qvOB0fOkHPM84qxdjQbaO5jM90QuR" crossorigin="anonymous"></script>
 <script type="module" src="scripts/app.js"></script>
 </body>
 </html>
