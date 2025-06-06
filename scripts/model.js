@@ -519,14 +519,7 @@ WholeGrid.prototype.newPlot = function(){
 
 
 WholeGrid.prototype.updatePlot = function(){
-    const target = this.plotElement;
-    if (this.viewT == 2) {
-        target.data[0].z = this.realT;
-    } else {
-        target.data[0].z = this.th;
-    }
-    target.layout.title = 'Time = ' + this.currentTime + ' (sec) ';
-    Plotly.redraw(target);
+    this.newPlot();
 };
 
 
