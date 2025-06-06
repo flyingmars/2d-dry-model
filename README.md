@@ -2,7 +2,7 @@
 Javascript Based , 2D Thermal simulation model
 
 ## Included Packages
-Bootstrap
+Bootstrap 4 (CDN)
 Plotly.JS
 JQuery
 
