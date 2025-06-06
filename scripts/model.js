@@ -68,6 +68,7 @@ function WholeGrid(options){
     // For Plot
     this.xgrid = new Array(this.NX);
     this.zgrid = new Array(this.NZ);
+    this.plotElement = document.getElementById('modelShow');
     this.viewT = options.viewT || 1  ;
     // Initailize
     for ( var k=0 ; k < this.NZ ; k++){
@@ -512,24 +513,19 @@ WholeGrid.prototype.newPlot = function(){
     var layout = {
         title : 'Time = '  + this.currentTime + ' (sec) '
     } ; 
-    Plotly.newPlot(modelShow, data, layout);
+    Plotly.newPlot(this.plotElement, data, layout);
 
 };
 
 
 WholeGrid.prototype.updatePlot = function(){
-    if ( this.viewT == 2 ){
-        modelShow.data.push({
-            z : this.realT 
-        }) ;
-        console.log('change');
-    }else{
-        modelShow.data.push({
-            z : this.th 
-        }) ;        
-    }
-    modelShow.layout.title = 'Time = ' + this.currentTime + ' (sec) ' ;
-    Plotly.redraw(modelShow) ;
+    const zData = this.viewT == 2 ? this.realT : this.th;
+    Plotly.react(this.plotElement, [{
+        x: this.xgrid,
+        y: this.zgrid,
+        z: zData,
+        type: 'heatmap'
+    }], { title: 'Time = ' + this.currentTime + ' (sec) ' });
 };
 
 
