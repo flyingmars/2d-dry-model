@@ -519,13 +519,14 @@ WholeGrid.prototype.newPlot = function(){
 
 
 WholeGrid.prototype.updatePlot = function(){
-    const zData = this.viewT == 2 ? this.realT : this.th;
-    Plotly.react(this.plotElement, [{
-        x: this.xgrid,
-        y: this.zgrid,
-        z: zData,
-        type: 'heatmap'
-    }], { title: 'Time = ' + this.currentTime + ' (sec) ' });
+    const target = this.plotElement;
+    if (this.viewT == 2) {
+        target.data[0].z = this.realT;
+    } else {
+        target.data[0].z = this.th;
+    }
+    target.layout.title = 'Time = ' + this.currentTime + ' (sec) ';
+    Plotly.redraw(target);
 };
 
 
