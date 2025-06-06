@@ -38,7 +38,7 @@
   <!-- Parameter Modal -->
   <div class="modal fade" id="setParameter">
   <div class="modal-dialog">
-    <form @submit.prevent="updateParameter" class="modal-content">
+    <form class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">模式參數設定面板</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -117,7 +117,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <button type="submit" class="btn btn-primary" data-dismiss="modal">更新參數</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" @click="updateParameter">更新參數</button>
       </div>
     </form>
   </div>
