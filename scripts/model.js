@@ -68,7 +68,11 @@ function WholeGrid(options){
     // For Plot
     this.xgrid = new Array(this.NX);
     this.zgrid = new Array(this.NZ);
-    this.plotElement = document.getElementById('modelShow');
+    if (typeof document !== 'undefined') {
+        this.plotElement = document.getElementById('modelShow');
+    } else {
+        this.plotElement = null;
+    }
     this.viewT = options.viewT || 1  ;
     this.colorbarMin = (options.colorbarMin !== undefined) ? parseFloat(options.colorbarMin) : -10;
     this.colorbarMax = (options.colorbarMax !== undefined) ? parseFloat(options.colorbarMax) : 0;
@@ -519,7 +523,9 @@ WholeGrid.prototype.newPlot = function(){
     var layout = {
         title : 'Time = '  + this.currentTime + ' (sec) '
     } ; 
-    Plotly.newPlot(this.plotElement, data, layout);
+    if (this.plotElement) {
+        Plotly.newPlot(this.plotElement, data, layout);
+    }
 
 };
 
