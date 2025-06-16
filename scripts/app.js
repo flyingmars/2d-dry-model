@@ -18,9 +18,7 @@ createApp({
       NX: 380,
       NZ: 64,
       DT: 0.5,
-      colorbarMin: -10,
-      colorbarMax: 0,
-      });
+    });
     const viewT = ref(1);
     const progress = ref(0);
     const progressVisible = ref(false);
@@ -46,8 +44,6 @@ createApp({
         NX: params.value.NX,
         NZ: params.value.NZ,
         DT: params.value.DT,
-        colorbarMin: params.value.colorbarMin,
-        colorbarMax: params.value.colorbarMax,
         viewT: viewT.value,
       });
       grid.baseState_OneDimension_Initialization();
@@ -77,14 +73,6 @@ createApp({
 
     const updateParameter = () => {
       createGrid();
-    };
-
-    const updateColorbar = () => {
-      if (grid) {
-        grid.colorbarMin = params.value.colorbarMin;
-        grid.colorbarMax = params.value.colorbarMax;
-        grid.newPlot();
-      }
     };
 
     const changeView = () => {
@@ -139,8 +127,7 @@ createApp({
       changeView,
       runStep,
       autoRun,
-      updateParameter,
-      updateColorbar
+      updateParameter
     };
   }
 }).mount('#app');

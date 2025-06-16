@@ -70,8 +70,6 @@ function WholeGrid(options){
     this.zgrid = new Array(this.NZ);
     this.plotElement = document.getElementById('modelShow');
     this.viewT = options.viewT || 1  ;
-    this.colorbarMin = (options.colorbarMin !== undefined) ? parseFloat(options.colorbarMin) : -10;
-    this.colorbarMax = (options.colorbarMax !== undefined) ? parseFloat(options.colorbarMax) : 0;
     // Initailize
     for ( var k=0 ; k < this.NZ ; k++){
         this.tb[k]    = 0 ;
@@ -500,9 +498,7 @@ WholeGrid.prototype.newPlot = function(){
                         x : this.xgrid,
                         y : this.zgrid,
                         z : this.realT ,
-                        type  : 'heatmap',
-                        zmin: this.colorbarMin,
-                        zmax: this.colorbarMax
+                        type  : 'heatmap'
 
                     }] ;
     }else{
@@ -510,11 +506,9 @@ WholeGrid.prototype.newPlot = function(){
                         x : this.xgrid,
                         y : this.zgrid,
                         z : this.th ,
-                        type  : 'heatmap',
-                        zmin: this.colorbarMin,
-                        zmax: this.colorbarMax
+                        type  : 'heatmap'
 
-                    }] ;
+                    }] ;        
     }
     var layout = {
         title : 'Time = '  + this.currentTime + ' (sec) '

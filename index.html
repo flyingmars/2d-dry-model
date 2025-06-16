@@ -112,20 +112,11 @@
               <label class="form-label" for="init_DT">積分時步[s]</label>
               <input type="number" class="form-control" id="init_DT" v-model.number="params.DT" placeholder="EX : 0.5">
             </div>
-            <div class="mb-3">
-              <label class="form-label" for="init_cbar_min">色階下限</label>
-              <input type="number" class="form-control" id="init_cbar_min" v-model.number="params.colorbarMin" placeholder="EX : -10">
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="init_cbar_max">色階上限</label>
-              <input type="number" class="form-control" id="init_cbar_max" v-model.number="params.colorbarMax" placeholder="EX : 0">
-            </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-info" data-dismiss="modal" @click="updateColorbar">更新色階</button>
         <button type="button" class="btn btn-primary" data-dismiss="modal" @click="updateParameter">更新參數</button>
       </div>
     </form>
