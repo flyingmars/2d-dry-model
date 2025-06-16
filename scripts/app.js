@@ -25,7 +25,6 @@ createApp({
     const autoRunning = ref(false);
     let intervalHandle = null;
     let grid = null;
-    let worker = null;
 
     const createGrid = () => {
       grid = new WholeGrid({
@@ -49,26 +48,6 @@ createApp({
       grid.baseState_OneDimension_Initialization();
       grid.perturbation_Initialization_Cold();
       grid.newPlot();
-      if (worker) {
-        worker.postMessage({ cmd: 'init', params: {
-          radz: params.value.radz,
-          zcnt: params.value.zcnt,
-          KZ: params.value.KZ,
-          delta: params.value.delta,
-          bg_profile: params.value.bg_profile,
-          radx: params.value.radx,
-          imid: params.value.imid,
-          KX: params.value.KX,
-          sfc_temp: params.value.sfc_temp,
-          top_temp: params.value.top_temp,
-          DX: params.value.DX,
-          DZ: params.value.DZ,
-          NX: params.value.NX,
-          NZ: params.value.NZ,
-          DT: params.value.DT,
-          viewT: viewT.value,
-        }});
-      }
     };
 
     const updateParameter = () => {
@@ -84,9 +63,9 @@ createApp({
     };
 
     const runStep = () => {
-      if (!grid || !worker) return;
+      if (!grid) return;
       progressVisible.value = true;
-      worker.postMessage({cmd: 'run', iter: 99});
+      pressRun(grid, 99, p => progress.value = p, () => progressVisible.value = false);
     };
 
     const autoRun = () => {
@@ -100,21 +79,6 @@ createApp({
     };
 
     onMounted(() => {
-      worker = new Worker('scripts/integrationWorker.js');
-      worker.onmessage = e => {
-        if (e.data.cmd === 'progress') {
-          progress.value = e.data.value;
-        } else if (e.data.cmd === 'done') {
-          progress.value = 100;
-          progressVisible.value = false;
-          if (grid) {
-            grid.realT = e.data.realT;
-            grid.th = e.data.th;
-            grid.currentTime = e.data.time;
-            grid.newPlot();
-          }
-        }
-      };
       createGrid();
     });
 
