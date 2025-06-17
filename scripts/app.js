@@ -18,6 +18,8 @@ createApp({
       NX: 380,
       NZ: 64,
       DT: 0.5,
+      colorMin: -10,
+      colorMax: 0,
     });
     const viewT = ref(1);
     const progress = ref(0);
@@ -43,6 +45,8 @@ createApp({
         NX: params.value.NX,
         NZ: params.value.NZ,
         DT: params.value.DT,
+        colorMin: params.value.colorMin,
+        colorMax: params.value.colorMax,
         viewT: viewT.value,
       });
       grid.baseState_OneDimension_Initialization();
